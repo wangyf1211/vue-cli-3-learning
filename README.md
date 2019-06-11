@@ -1,4 +1,5 @@
 # hello-world
+the project to learn about vue-cli-3
 
 ## Project setup
 ```
