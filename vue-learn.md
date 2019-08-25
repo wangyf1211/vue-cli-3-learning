@@ -310,4 +310,12 @@ function proxy (vm: Component, key: string) {
 做完数据的代理，就正式进入响应系统，
 
 observe(data)
-我们说过，数据响应系统主要包含三部分：Observer、Dep、Watcher，代码分别存放在：observer/index.js、observer/dep.js 以及 observer/watcher.js 文件中，这回我们换一种方式，我们先不看其源码，大家先跟着我的思路来思考，最后回头再去看代码，你会有一种：”奥，不过如此“的感觉。
+我们说过，数据响应系统主要包含三部分：Observer、Dep、Watcher，代码分别存放在：observer/index.js、observer/dep.js 以及 observer/watcher.js 文件中。
+
+以目前的理解讲述一下数据双向绑定的原理。
+
+首先Observer部分，有两个主要函数defineReactive()和observe()，前者主要对属性利用defineProperty()做数据劫持，而observe()主要是遍历data()对象的所有属性，递归调用，对每个属性都添加访问性属性。
+
+对于Watcher，data[exp]时会获取data.exp所以就会调用到get函数，成功的与observer产生了关联。此时再利用Dep，Dep.target设为当前的watcher对象
+
+Dep为依赖收集器，每一个属性对应一个Dep，在defineReactive中对应一个属性就新建一个dep对象，在get()方法中对当前属性对应的dep进行addSub()操作，添加到Dep类的subs数组中，在set涉及到数据变更时，对Dep中的所有依赖进行notify提醒watcher该更新了。
